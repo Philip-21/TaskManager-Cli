@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	
 	cmd.RootCmd.Execute()
 	database.ConnectDB()
 }
