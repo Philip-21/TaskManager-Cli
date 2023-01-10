@@ -26,7 +26,3 @@ var doCmd = &cobra.Command{
 		fmt.Println(ids)
 	},
 }
-
-func init() {
-	RootCmd.AddCommand(doCmd)
-}

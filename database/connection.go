@@ -30,7 +30,7 @@ func btoi(b []byte) int {
 	return int(binary.BigEndian.Uint64(b))
 }
 
-func ConnectDB() {
+func ConnectDB(dbpath string) error {
 	db, err := bolt.Open("task.db", DBPORT, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -42,13 +42,12 @@ func ConnectDB() {
 		}
 		return nil
 	})
+	return err
 
-	defer db.Close()
 }
 
 func Create(task string) (int, error) {
 	var id int
-
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(taskBucket)
 		id_64, _ := b.NextSequence() /// returns an autoincrementing integer for the bucket.
@@ -60,4 +59,31 @@ func Create(task string) (int, error) {
 		return -1, err
 	}
 	return id, nil
+}
+
+func GetTasks() ([]Task, error) {
+	var tasks []Task
+
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+		cr := b.Cursor() //creates a cursor associated with the bucket   (cursor is to retrieve data, one row at a time, from a result set)
+		for k, v := cr.First(); k != nil; k, v = cr.Next() {
+			tasks = append(tasks, Task{
+				Key:   btoi(k),
+				Value: string(v),
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func DeleteTask(key int) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+		return b.Delete(itob(key))
+	})
 }
