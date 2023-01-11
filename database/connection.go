@@ -69,7 +69,7 @@ func GetTasks() ([]Task, error) {
 		cr := b.Cursor() //creates a cursor associated with the bucket   (cursor is to retrieve data, one row at a time, from a result set)
 		for k, v := cr.First(); k != nil; k, v = cr.Next() {
 			tasks = append(tasks, Task{
-				Key:   btoi(k),
+				Key:   btoi(k), //converts the bytes to an integer
 				Value: string(v),
 			})
 		}

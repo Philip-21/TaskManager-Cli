@@ -13,7 +13,3 @@ var listCmd = &cobra.Command{
 		fmt.Println("List called")
 	},
 }
-
-func init() {
-	RootCmd.AddCommand(listCmd)
-}
